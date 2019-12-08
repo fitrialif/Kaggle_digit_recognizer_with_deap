@@ -2,6 +2,7 @@ import unittest
 import deap_functions
 import numpy as np
 import deap
+import data_load
 
 
 class BaseUnitTest(unittest.TestCase):
@@ -14,8 +15,8 @@ class TestReformat(BaseUnitTest):
     def test_reformat(self):
         """testing deap_functions.reformat if reformat works"""
         test_dataset = np.array([[1, 2, 3, 4, 5, 6, 7, 8, 9], [1, 2, 3, 4, 5, 6, 7, 8, 9]])
-        self.assertEqual(deap_functions.reformat(test_dataset, image_size=3).shape, (2, 3, 3, 1))
-        self.assertNotEqual(deap_functions.reformat(test_dataset, 3).shape, (2, 3, 3, 2))
+        self.assertEqual(data_load.reformat(test_dataset, image_size=3).shape, (2, 3, 3, 1))
+        self.assertNotEqual(data_load.reformat(test_dataset, 3).shape, (2, 3, 3, 2))
 
 
 class TestPadding(BaseUnitTest):
@@ -45,7 +46,7 @@ class TestPadding(BaseUnitTest):
                                     [[0], [0], [0], [0], [0], [0], [0]],
                                     [[0], [0], [0], [0], [0], [0], [0]]]])
 
-        self.assertTrue((deap_functions.padding(source_dataset, padding_no=2) == result_dataset).all())
+        self.assertTrue((data_load.padding(source_dataset, padding_no=2) == result_dataset).all())
 
 
 class TestRandomOddInt(BaseUnitTest):

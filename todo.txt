@@ -1,0 +1,7 @@
+implement mutation
+implement saving status of the training to bag and restore training from that point
+implement saving model of a particular individual
+implement running particular model in inference mode
+implement continue training of particular model/individual
+implement use resnet instead of lenet
+implement data augmentation (shift to left,right, bottom, up, rotate by 90,190,270, and discrete angle

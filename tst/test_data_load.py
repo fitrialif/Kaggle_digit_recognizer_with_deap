@@ -18,12 +18,12 @@ class TestDataLoad(BaseUnitTest):
 
         # just check if shape is correct
         self.assertEqual(training_dataset.shape, (80, 28, 28, 1))
-        self.assertEqual(testing_dataset.shape, (4, 28, 28, 1))
-        self.assertEqual(validating_dataset.shape, (16, 28, 28, 1))
+        self.assertEqual(testing_dataset.shape, (10, 28, 28, 1))
+        self.assertEqual(validating_dataset.shape, (10, 28, 28, 1))
 
         self.assertEqual(training_labels.shape, (80, 10))
-        self.assertEqual(testing_labels.shape, (4, 10))
-        self.assertEqual(validating_labels.shape, (16, 10))
+        self.assertEqual(testing_labels.shape, (10, 10))
+        self.assertEqual(validating_labels.shape, (10, 10))
 
 
 class TestLoadInitialPopulation(BaseUnitTest):

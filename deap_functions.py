@@ -176,12 +176,12 @@ def create_toolbox():
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
     # Register functions to evaluate individual
-    from evaluate import evaluate_individual_fast
-    from evaluate import evaluate_individual_normal
-    from evaluate import evaluate_individual
-    toolbox.register("evaluate_fast", evaluate_individual_fast)
-    toolbox.register("evaluate_normal", evaluate_individual_normal)
-    toolbox.register("evaluate", evaluate_individual)
+    from evaluate import train_individual_fast
+    from evaluate import train_individual_normal
+    from evaluate import train_individual
+    toolbox.register("evaluate_fast", train_individual_fast)
+    toolbox.register("evaluate_normal", train_individual_normal)
+    toolbox.register("evaluate", train_individual)
 
     # register functions to mate, mutate and select
     toolbox.register("mate", mate_individuals)

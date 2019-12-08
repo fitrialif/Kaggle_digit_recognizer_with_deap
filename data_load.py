@@ -55,7 +55,7 @@ def data_load(input_file, image_size):
 
     # here test set is split again for testing and validation (of the accuracy at the end of learning)
     testing_features, validating_features, testing_labels, validating_labels = \
-        train_test_split(testing_all_features, testing_all_labels, test_size=0.8, random_state=0)
+        train_test_split(testing_all_features, testing_all_labels, test_size=0.5, random_state=0)
 
     # reformat data
     training_dataset = reformat(training_features, image_size)

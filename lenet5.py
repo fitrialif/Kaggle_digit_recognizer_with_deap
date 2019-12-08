@@ -1,6 +1,10 @@
 # import statements needed for the functions below
 import tensorflow as tf
+# import tensorflow.compat.v1 as tf
+# tf.disable_v2_behavior()
+# from tensorflow.contrib.layers import flatten
 from tensorflow.contrib.layers import flatten
+#from tensorflow.keras.layers import flatten
 
 
 # LeNet-5 architecture implementation using TensorFlow
@@ -19,11 +23,8 @@ def le_net_5(x, standard_dev, receptive_field_1, filters_1, receptive_field_2, f
     # format is a 4-D tensor of shape [filter_height, filter_width, in_channels, out_channels]
     # in channels is 1 because we have depth of 1 and out channels is 6 because this is what model lenet says
     # conv1_w = tf.Variable(tf.truncated_normal(shape = [5,5,1,6],mean = 0, stddev = 0.1))
-    conv1_w = tf.Variable(tf.truncated_normal(shape=[receptive_field_1, receptive_field_1, 1, filters_1],
-
-
-
-                                              mean=0, stddev=standard_dev))
+    conv1_w = tf.Variable(tf.random.truncated_normal(shape=[receptive_field_1, receptive_field_1, 1, filters_1],
+                                                     mean=0, stddev=standard_dev))
     # print("conv1_w.shape variable: ", conv1_w.shape)
 
     # not sure why bias is not random
@@ -49,13 +50,13 @@ def le_net_5(x, standard_dev, receptive_field_1, filters_1, receptive_field_2, f
     # 1 for Num_samples and Channels mean that no max_pooling for those -
     # I read somewhere that what matters is shape of the input tensor
     # stride == size of the sliding window (ksize) means that no overlapping of the regions
-    pool_1 = tf.nn.max_pool(conv1, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
+    pool_1 = tf.nn.max_pool2d(conv1, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
     # print("pool_1.shape max_pool: ", pool_1.shape)
 
     # Layer 2: Convolutional. Output = 10x10x16.
     # this time receptive fields is 5x5 and we go for no obvious reason from 6 to 16 channels
     # conv2_w = tf.Variable(tf.truncated_normal(shape = [5,5,6,16], mean = 0, stddev = 0.1))
-    conv2_w = tf.Variable(tf.truncated_normal(shape=[receptive_field_2, receptive_field_2, filters_1,
+    conv2_w = tf.Variable(tf.random.truncated_normal(shape=[receptive_field_2, receptive_field_2, filters_1,
                                                      filters_2], mean=0, stddev=standard_dev))
     # print("conv2_w.shape variable: ", conv2_w.shape)
 
@@ -74,7 +75,7 @@ def le_net_5(x, standard_dev, receptive_field_1, filters_1, receptive_field_2, f
 
     # Pooling. Input = 10x10x16. Output = 5x5x16.
     # again ksize == strides means no overlapping sectors when doing pooling
-    pool_2 = tf.nn.max_pool(conv2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
+    pool_2 = tf.nn.max_pool2d(conv2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
     # print("pool_2.shape max_pool: ", pool_2.shape)
 
     # Flatten. Input = 5x5x16. Output = 400.
@@ -87,7 +88,7 @@ def le_net_5(x, standard_dev, receptive_field_1, filters_1, receptive_field_2, f
     # fc1_w = tf.Variable(tf.truncated_normal(shape = (400,120), mean = 0, stddev = 0.1))
     # inf(fc1.shape[1]) casts to int result of the size of the flattened 2nd layer
     # result of the fc1.shape is (?, x) where x is a string or something that needs to be casted to int
-    fc1_w = tf.Variable(tf.truncated_normal(shape=(int(fc1.shape[1]), 120), mean=0, stddev=standard_dev))
+    fc1_w = tf.Variable(tf.random.truncated_normal(shape=(int(fc1.shape[1]), 120), mean=0, stddev=standard_dev))
 
     # print("shape fc1 : ", fc1.shape)
     # print("shape fc1_w :", fc1_w.shape)
@@ -103,7 +104,7 @@ def le_net_5(x, standard_dev, receptive_field_1, filters_1, receptive_field_2, f
     fc1 = activation(fc1)
 
     # Layer 4: Fully Connected. Input = 120. Output = 84.
-    fc2_w = tf.Variable(tf.truncated_normal(shape=(120, 84), mean=0, stddev=standard_dev))
+    fc2_w = tf.Variable(tf.random.truncated_normal(shape=(120, 84), mean=0, stddev=standard_dev))
     # fc2_w = tf.Variable(tf.truncated_normal(shape = (120,84), mean = 0, stddev = 0.1))
     fc2_b = tf.Variable(tf.zeros(84))
     # fc2_b = tf.Variable(tf.zeros(120))
@@ -112,7 +113,7 @@ def le_net_5(x, standard_dev, receptive_field_1, filters_1, receptive_field_2, f
     fc2 = activation(fc2)
 
     # Layer 5: Fully Connected. Input = 84. Output = 10.
-    fc3_w = tf.Variable(tf.truncated_normal(shape=(84, 10), mean=0, stddev=standard_dev))
+    fc3_w = tf.Variable(tf.random.truncated_normal(shape=(84, 10), mean=0, stddev=standard_dev))
     # fc3_w = tf.Variable(tf.truncated_normal(shape = (120,10), mean = 0 , stddev = 0.1))
     fc3_b = tf.Variable(tf.zeros(10))
     logits = tf.matmul(fc2, fc3_w) + fc3_b

@@ -5,6 +5,7 @@ import deap_functions
 import time
 import random
 
+
 class BaseUnitTest(unittest.TestCase):
     def setUp(self):
         print(self._testMethodDoc)
@@ -12,8 +13,9 @@ class BaseUnitTest(unittest.TestCase):
 
 class TestEvaluate(BaseUnitTest):
 
-    def test_evaluate_individual_fast(self):
-        """testing evaluate.evaluate_individual_fast"""
+    def test_train_individual_fast(self):
+
+        """testing evaluate.train_individual_fast"""
 
         # create toolbox using deap_functions
         toolbox = deap_functions.create_toolbox()
@@ -29,14 +31,79 @@ class TestEvaluate(BaseUnitTest):
         individual = toolbox.individual()
 
         # run evaluation
-        accuracy = evaluate.evaluate_individual_fast(individual, training_dataset, validating_dataset, testing_dataset,
-                                                     training_labels, validating_labels, testing_labels)
+        accuracy, protobuf, metagraph, x, y_, save_path = evaluate.train_individual_fast(individual, training_dataset, validating_dataset,
+                                                            testing_dataset, training_labels, validating_labels,
+                                                            testing_labels)
 
-        print(accuracy)
-        self.assertTrue(hasattr(toolbox, 'individual'))
+        print("accuracy from training: ", accuracy)
+        print("type of model :", type(protobuf))
+        import sys
 
-    def test_evaluate_individual_fast_several_times(self):
-        """testing evaluate.evaluate_individual_fast"""
+        #print(protobuf)
+        #self.assertTrue(hasattr(toolbox, 'individual'))
+        #print("size of model : ", sys.getsizeof(protobuf))
+        #print("deep size of the the model : ", deep_getsizeof(protobuf, set()))
+
+        # use model in protobuf to evaluate individual
+        accuracy = evaluate.evaluate_individual(individual, protobuf, metagraph,  save_path, testing_dataset, testing_labels)
+        print("accuracy from evaluation: ", accuracy)
+        print("accuracy from evaluation: ", accuracy)
+        print("accuracy from evaluation: ", accuracy)
+
+
+    def test_train_individual_fast_0_97(self):
+
+        """testing evaluate.train_individual_fast"""
+
+        # create toolbox using deap_functions
+        toolbox = deap_functions.create_toolbox()
+
+        # loading data
+        # input_file = '../data/sample.csv'
+        input_file = '../data/train.csv'
+        image_size = 28
+        training_dataset, testing_dataset, validating_dataset, training_labels, testing_labels, validating_labels = \
+            data_load.data_load(input_file, image_size)
+
+        # create one individual
+        individual = toolbox.individual()
+        xx = [6822, 0.06, 0.013, 5, 16, 7, 17, 5]  # 0.97
+        #x = [3917, 0.089, 0.032, 7, 13, 5, 14, 7]  # 0.84
+        #x = [4099, 0.105, 0.042, 9, 3, 11, 25, 2]  # 0.42
+        print(xx)
+        print(individual)
+
+        for i, elem in enumerate(xx):
+            individual[i] = xx[i]
+
+        print(individual)
+
+        # run evaluation
+        accuracy, protobuf, metagraph, x, y_, save_path = evaluate.train_individual_fast(individual, training_dataset, validating_dataset,
+                                                            testing_dataset, training_labels, validating_labels,
+                                                            testing_labels)
+
+        print("accuracy from training: ", accuracy)
+        print("type of model :", type(protobuf))
+        import sys
+
+        #print(protobuf)
+        #self.assertTrue(hasattr(toolbox, 'individual'))
+        #print("size of model : ", sys.getsizeof(protobuf))
+        #print("deep size of the the model : ", deep_getsizeof(protobuf, set()))
+
+        # use model in protobuf to evaluate individual
+        accuracy = evaluate.evaluate_individual_2(individual, protobuf, metagraph, x, y_, save_path, testing_dataset, testing_labels)
+        print("accuracy from evaluation: ", accuracy)
+        print("accuracy from evaluation: ", accuracy)
+        print("accuracy from evaluation: ", accuracy)
+
+
+
+
+
+    def test_train_individual_fast_several_times(self):
+        """testing evaluate.train_individual_fast"""
 
         # create toolbox using deap_functions
         toolbox = deap_functions.create_toolbox()
@@ -56,7 +123,7 @@ class TestEvaluate(BaseUnitTest):
             individual = toolbox.individual()
 
             # run evaluation
-            accuracy = evaluate.evaluate_individual_fast(individual, training_dataset, validating_dataset,
+            accuracy, protobuf = evaluate.train_individual_fast(individual, training_dataset, validating_dataset,
                                                          testing_dataset, training_labels, validating_labels,
                                                          testing_labels)
 
@@ -78,7 +145,53 @@ class TestEvaluate(BaseUnitTest):
             print("time used for this loop: {:.5f}" .format(time_used))
         output.close()
 
-    def test_evaluate_individual_fast_several_times2(self):
+
+
+
+
+    def evaulate_trained_individual(self):
+
+        """testing evaluate.train_individual_fast"""
+
+        # create toolbox using deap_functions
+        toolbox = deap_functions.create_toolbox()
+
+        # loading data
+        # input_file = '../data/sample.csv'
+        input_file = '../data/train.csv'
+        image_size = 28
+        training_dataset, testing_dataset, validating_dataset, training_labels, testing_labels, validating_labels = \
+            data_load.data_load(input_file, image_size)
+
+        # create one individual
+        individual = toolbox.individual()
+
+        # run training
+        accuracy, protobuf = evaluate.train_individual_fast(individual, validating_dataset, validating_labels)
+
+        # run evaluation in order to check if accuracy of the individual is equal to accuracy
+        # calculated as part of the training
+        accuracy = evaluate.evaluate_individual(individual,protobuf, testing_dataset, testing_labels)
+
+
+        print("accuracy from training: ", accuracy)
+        print("type of model :", type(protobuf))
+        import sys
+
+        print(protobuf)
+        self.assertTrue(hasattr(toolbox, 'individual'))
+        print("size of model : ", sys.getsizeof(protobuf))
+        print("deep size of the the model : ", deep_getsizeof(protobuf, set()))
+
+        # use model in protobuf to evaluate individual
+        accuracy = evaluate.evaluate_individual(individual, protobuf, testing_dataset, testing_labels)
+        print("accuracy from evaluation: ", accuracy)
+
+
+
+
+    # TODO: this function does not really evaluate individual fast but just create tons of individuals - fix it
+    def test_train_individual_fast_several_times2(self):
         """testing evaluate.evaluate_individual_fast"""
 
         # create toolbox using deap_functions
@@ -145,3 +258,38 @@ class TestEvaluate(BaseUnitTest):
         print(" ---- new population ----")
         for ind in pop:
             print(ind.fitness.values, ind)
+
+
+from collections import Mapping, Container
+from sys import getsizeof
+# Find the memory footprint of a Python object
+#
+# This is a recursive function that drills down a Python object graph
+# like a dictionary holding nested dictionaries with lists of lists
+# and tuples and sets.
+#
+# The sys.getsizeof function does a shallow size of only. It counts each
+# object inside a container as pointer only regardless of how big it
+# really is.
+# :param o: the object
+# :param ids:
+# :return:
+def deep_getsizeof(o, ids):
+
+    d = deep_getsizeof
+    if id(o) in ids:
+        return 0
+
+    r = getsizeof(o)
+    ids.add(id(o))
+
+    if isinstance(o, str) or isinstance(0, str):
+        return r
+
+    if isinstance(o, Mapping):
+        return r + sum(d(k, ids) + d(v, ids) for k, v in o.iteritems())
+
+    if isinstance(o, Container):
+        return r + sum(d(x, ids) for x in o)
+
+    return r
