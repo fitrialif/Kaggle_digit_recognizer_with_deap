@@ -3,6 +3,7 @@ import deap_functions
 import numpy as np
 import deap
 import data_load
+import uuid
 
 
 class BaseUnitTest(unittest.TestCase):
@@ -199,6 +200,14 @@ class TestBlxAlphaFloat(BaseUnitTest):
         self.assertGreater(gamma, 0)
 
 
+class TestNullUuid(BaseUnitTest):
+    def test_null_uuid_if_returns_string_of_zeors(self):
+        """test if null_uuid returns nulls"""
+        uuid1 = deap_functions.null_uuid()
+        uuid2 = str(uuid.UUID('{0000-0000-0000-0000-0000-0000-0000-0000}'))
+        self.assertEqual(uuid1, uuid2)
+
+
 class TestHyperParameters(BaseUnitTest):
     def test_create_toolbox_if_parameters_filled_in(self):
         """testing deap_functions.hyper_parameters if hyperparameters are filled in"""
@@ -310,16 +319,41 @@ class TestMateIndividuals(BaseUnitTest):
         pop = toolbox.population(2)
 
         # mate parents
-        child = deap_functions.mate_individuals(toolbox, pop[0], pop[1])
+        child1 = deap_functions.mate_individuals(toolbox, pop[0], pop[1])
+        child2 = deap_functions.mate_individuals(toolbox, pop[0], pop[1])
 
-        self.assertIsInstance(child[0], int)
-        self.assertIsInstance(child[1], float)
-        self.assertIsInstance(child[7], int)
-        self.assertIsNotNone(child.fitness)
-        self.assertIsInstance(child.fitness, deap.creator.FitnessMax)
+        self.assertIsInstance(child1[0], int)
+        self.assertIsInstance(child1[1], float)
+        self.assertIsInstance(child1[7], int)
+        self.assertIsNotNone(child1.fitness)
+        self.assertIsInstance(child1.fitness, deap.creator.FitnessMax)
+
+        print(pop[0])
+        print(pop[1])
+        print(child1)
+        print(child2)
+
+        child3 = deap_functions.mate_individuals(toolbox, child1, child2)
+        print(child3)
+        self.assertEqual(child3[10],child1[9])
+        self.assertEqual(child3[11],child2[9])
 
 
 class TestMutateIndividual(BaseUnitTest):
     def test_mutate_individual(self):
         """testing deap_functions.mutate_individual if mutation works"""
-        print("not implemented yet - just do nothing")
+
+
+        # create toolbox using deap_functions
+        toolbox = deap_functions.create_toolbox()
+
+        # create individual
+        individual = toolbox.individual()
+
+        print(individual)
+
+
+        mutant = deap_functions.mutate_individual(individual,2)
+        print(individual)
+        print(mutant)
+

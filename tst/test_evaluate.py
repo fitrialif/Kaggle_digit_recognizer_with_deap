@@ -31,12 +31,12 @@ class TestEvaluate(BaseUnitTest):
         individual = toolbox.individual()
 
         # run evaluation
-        accuracy, protobuf, metagraph, x, y_, save_path = evaluate.train_individual_fast(individual, training_dataset, validating_dataset,
+        accuracy = evaluate.train_individual_fast(individual, training_dataset, validating_dataset,
                                                             testing_dataset, training_labels, validating_labels,
                                                             testing_labels)
 
         print("accuracy from training: ", accuracy)
-        print("type of model :", type(protobuf))
+        #print("type of model :", type(protobuf))
         import sys
 
         #print(protobuf)
@@ -45,7 +45,7 @@ class TestEvaluate(BaseUnitTest):
         #print("deep size of the the model : ", deep_getsizeof(protobuf, set()))
 
         # use model in protobuf to evaluate individual
-        accuracy = evaluate.evaluate_individual(individual, protobuf, metagraph,  save_path, testing_dataset, testing_labels)
+        accuracy = evaluate.evaluate_individual(individual, testing_dataset, testing_labels)
         print("accuracy from evaluation: ", accuracy)
         print("accuracy from evaluation: ", accuracy)
         print("accuracy from evaluation: ", accuracy)
@@ -74,17 +74,20 @@ class TestEvaluate(BaseUnitTest):
         print(individual)
 
         for i, elem in enumerate(xx):
+            #print(i)
             individual[i] = xx[i]
 
+
         print(individual)
+        print(individual[10])
 
         # run evaluation
-        accuracy, protobuf, metagraph, x, y_, save_path = evaluate.train_individual_fast(individual, training_dataset, validating_dataset,
+        accuracy = evaluate.train_individual_fast(individual, training_dataset, validating_dataset,
                                                             testing_dataset, training_labels, validating_labels,
                                                             testing_labels)
 
         print("accuracy from training: ", accuracy)
-        print("type of model :", type(protobuf))
+        #print("type of model :", type(protobuf))
         import sys
 
         #print(protobuf)
@@ -93,10 +96,77 @@ class TestEvaluate(BaseUnitTest):
         #print("deep size of the the model : ", deep_getsizeof(protobuf, set()))
 
         # use model in protobuf to evaluate individual
-        accuracy = evaluate.evaluate_individual_2(individual, protobuf, metagraph, x, y_, save_path, testing_dataset, testing_labels)
+        accuracy = evaluate.evaluate_individual_2(individual, testing_dataset, testing_labels)
         print("accuracy from evaluation: ", accuracy)
-        print("accuracy from evaluation: ", accuracy)
-        print("accuracy from evaluation: ", accuracy)
+        #print("accuracy from evaluation: ", accuracy)
+        #print("accuracy from evaluation: ", accuracy)
+
+
+
+
+
+
+
+
+    def test_train_individual_fast_0_97_and_retrain(self):
+
+        """testing evaluate.train_individual_fast and retrain it again a bit"""
+
+        # create toolbox using deap_functions
+        toolbox = deap_functions.create_toolbox()
+
+        # loading data
+        # input_file = '../data/sample.csv'
+        input_file = '../data/train.csv'
+        image_size = 28
+        training_dataset, testing_dataset, validating_dataset, training_labels, testing_labels, validating_labels = \
+            data_load.data_load(input_file, image_size)
+
+        # create one individual
+        individual = toolbox.individual()
+        #xx = [6822, 0.06, 0.013, 5, 16, 7, 17, 5]  # 0.97
+        #x = [3917, 0.089, 0.032, 7, 13, 5, 14, 7]  # 0.84
+        xx = [4099, 0.105, 0.042, 9, 3, 11, 25, 2]  # 0.42
+        print(xx)
+        print(individual)
+
+        for i, elem in enumerate(xx):
+            #print(i)
+            individual[i] = xx[i]
+
+
+        print(individual)
+        print(individual[10])
+
+        # run training 1
+        accuracy = evaluate.train_individual_fast(individual, training_dataset, validating_dataset,
+                                                            testing_dataset, training_labels, validating_labels,
+                                                            testing_labels)
+        print("accuracy from training 1 : ", accuracy)
+
+
+        # use model in protobuf to evaluate individual after first training
+        accuracy = evaluate.evaluate_individual_2(individual, testing_dataset, testing_labels)
+        print("accuracy from evaluation 1: ", accuracy)
+
+
+
+        for i in range(10):
+            accuracy = evaluate.train_individual2(individual, 10, training_dataset, validating_dataset,
+                                                  testing_dataset, training_labels, validating_labels,
+                                                  testing_labels)
+            print("accuracy from training ",i , " : ", accuracy)
+
+
+            # use model in protobuf to evaluate individual after first training
+            accuracy = evaluate.evaluate_individual_2(individual, testing_dataset, testing_labels)
+            print("accuracy from evaluation ",i , " : ",  accuracy)
+
+
+
+
+
+
 
 
 
@@ -116,14 +186,14 @@ class TestEvaluate(BaseUnitTest):
 
         output = open("../data/initial_population2.txt", "w+")
 
-        for i in range(3000):
+        for i in range(10):
 
             start_time = time.time()
             # create one individual
             individual = toolbox.individual()
 
             # run evaluation
-            accuracy, protobuf = evaluate.train_individual_fast(individual, training_dataset, validating_dataset,
+            accuracy, protobuf, metagraph, x, y_, save_path = evaluate.train_individual_fast(individual, training_dataset, validating_dataset,
                                                          testing_dataset, training_labels, validating_labels,
                                                          testing_labels)
 

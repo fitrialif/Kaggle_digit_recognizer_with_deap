@@ -1,10 +1,12 @@
 # import statements needed for the functions below
 import random
+import uuid
+import copy
 
 from deap import base
 from deap import creator
 from deap import tools
-import evaluate # this is done to avoid circular import error
+#import evaluate # this is done to avoid circular import error
 
 
 # this function return an odd integer from the range
@@ -91,6 +93,16 @@ def blx_alpha_int_odd(int1, int2, alpha, int3, int4):
 
     return gamma
 
+def null_uuid():
+    return str(uuid.UUID('{0000-0000-0000-0000-0000-0000-0000-0000}'))
+
+
+def new_uuid():
+    return str(uuid.uuid1())
+
+def generation():
+    return 0
+
 
 # this function will return list of attributes needed for the individual
 def hyper_parameters(toolbox_):
@@ -101,7 +113,11 @@ def hyper_parameters(toolbox_):
                      toolbox_.attr_filters_conv_1(),
                      toolbox_.attr_receptive_field_conv_2(),
                      toolbox_.attr_filters_conv_2(),
-                     toolbox_.attr_activation()]
+                     toolbox_.attr_activation(),
+                     toolbox_.attr_generation(),  # generation when it was conceived
+                     toolbox_.attr_uuid(),        # id of the individual itself
+                     toolbox_.attr_null_uuid(),   # id of parent 1
+                     toolbox_.attr_null_uuid()]   # id of parent 2
 
     return hyper_params_
 
@@ -158,6 +174,9 @@ def create_toolbox():
     toolbox.register("attr_activation",             random.randint,
                      GeneRange.attr_activation_min,
                      GeneRange.attr_activation_max)
+    toolbox.register("attr_generation", generation)
+    toolbox.register("attr_uuid", new_uuid)
+    toolbox.register("attr_null_uuid", null_uuid)
 
     # register additional child classes with use of creator
     # child classes can be reached by calling creator.child class
@@ -179,9 +198,11 @@ def create_toolbox():
     from evaluate import train_individual_fast
     from evaluate import train_individual_normal
     from evaluate import train_individual
+    from evaluate import train_individual2
     toolbox.register("evaluate_fast", train_individual_fast)
     toolbox.register("evaluate_normal", train_individual_normal)
     toolbox.register("evaluate", train_individual)
+    toolbox.register("evaluate2", train_individual2)
 
     # register functions to mate, mutate and select
     toolbox.register("mate", mate_individuals)
@@ -236,22 +257,53 @@ def mate_individuals(toolbox, individual1, individual2):
                              GeneRange.attr_activation_min,
                              GeneRange.attr_activation_max)
 
+
+    # copy is of the parent to the child
+    # so that we know who are parents of this child
+    child[10] = individual1[9]
+    child[11] = individual2[9]
+
     return child
 
 
 #
 # TODO: mutate_individual - this function is not yet implemented
-def mutate_individual(individual, gene_range):
-    # crossover for attributes
-    #     batch_size    - average
-    #     learning_rate - average
-    #     standard_dev  - average
-    #     receptive_field_1  - 50% chance to go to the child
-    #     filters_1,         - 50% chance to go to the child
-    #     receptive_field_2, - 50% chance to go to the child
-    #     filters_2,         - 50% chance to go to the child
-    #     activation         - 50% chance to go to the child
+def mutate_individual(toolbox, individual, number_of_genes_to_mutate):
 
-    # print()
+    # copy individual
+    mutant = copy.deepcopy(individual)
 
-    return individual
+    #give mutant new uuid
+    mutant[9] = new_uuid()
+
+    # give mutant uuid of the parent
+    mutant[10] = individual[9]
+
+    # delete uuid of another parent
+    mutant[11] = null_uuid()
+
+    # assuming that individual last 4 values are uuids and generation
+    # we can calculate size of
+
+    #print(len(individual))
+    selected_genes = []
+    if number_of_genes_to_mutate > 9:
+        print("number of genes to be mutated cannot be more than 8")
+    else:
+
+        while len(selected_genes) < number_of_genes_to_mutate:
+            gene = random.randint(0,7)
+            if gene not in selected_genes:
+                selected_genes.append(gene)
+            #print(gene)
+
+        #print(selected_genes)
+        #toolbox = create_toolbox()
+        for gene in selected_genes:
+            #x = hyper_parameters(toolbox)
+            #mutant[gene] = x[gene]
+            mutant[gene] = hyper_parameters(toolbox)[gene]
+
+            #print("random new value for gene : ", gene, " : ", x[gene])
+
+    return mutant
